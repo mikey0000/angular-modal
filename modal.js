@@ -35,7 +35,7 @@ function modalFactoryFactory($animate, $compile, $rootScope, $controller, $q, $h
       });
     }
 
-    function activate (locals) {
+    function open (locals) {
       return html.then(function (html) {
         if (!element) {
           attach(html, locals);
@@ -68,7 +68,7 @@ function modalFactoryFactory($animate, $compile, $rootScope, $controller, $q, $h
       return $animate.enter(element, container);
     }
 
-    function deactivate () {
+    function close () {
       if (!element) {
         return $q.when();
       }
@@ -85,8 +85,8 @@ function modalFactoryFactory($animate, $compile, $rootScope, $controller, $q, $h
     }
 
     return {
-      activate: activate,
-      deactivate: deactivate,
+      open: open,
+      close: close,
       active: active
     };
   };
