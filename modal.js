@@ -22,7 +22,7 @@ function modalFactoryFactory($animate, $compile, $rootScope, $controller, $q, $h
         container     = angular.element(config.container || document.body),
         element       = null,
         html,
-        scope;
+        scope         = config.scope || null;
 
     if (config.template) {
       html = $q.when(config.template);
@@ -43,13 +43,31 @@ function modalFactoryFactory($animate, $compile, $rootScope, $controller, $q, $h
       });
     }
 
+    function close () {
+      if (!element) {
+        return $q.when();
+      }
+      return $animate.leave(element).then(function () {
+        // scope.$destroy(); // don't do this
+        // scope = null;
+        element.remove();
+        element = null;
+      });
+    }
+
+    function active () {
+      return !!element;
+    }
+
 
     function attach (html, locals) {
       element = angular.element(html);
       if (element.length === 0) {
         throw new Error('The template contains no elements; you need to wrap text nodes')
       }
-      scope = $rootScope.$new();
+      if(!scope) {
+        scope = $rootScope.$new();
+      }
       if (controller) {
         if (!locals) {
           locals = {};
@@ -68,21 +86,7 @@ function modalFactoryFactory($animate, $compile, $rootScope, $controller, $q, $h
       return $animate.enter(element, container);
     }
 
-    function close () {
-      if (!element) {
-        return $q.when();
-      }
-      return $animate.leave(element).then(function () {
-        scope.$destroy();
-        scope = null;
-        element.remove();
-        element = null;
-      });
-    }
-
-    function active () {
-      return !!element;
-    }
+    
 
     return {
       open: open,
